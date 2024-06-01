@@ -18,9 +18,9 @@ interface StationInformation {
   };
 }
 
-// const MapComponent = dynamic(() => import('../components/Map'), {
-//   ssr: false,
-// });
+const MapComponent = dynamic(() => import('../components/Map'), {
+  ssr: false,
+});
 
 interface ClientHomePageProps {
   stationData: StationInformation;
@@ -43,7 +43,7 @@ const ClientHomePage: React.FC<ClientHomePageProps> = ({ stationData }) => {
       {selectedStation && (
         <div>
           <h2>Selected Station: {selectedStation.name}</h2>
-          {/* <MapComponent lat={selectedStation.lat} lon={selectedStation.lon} /> */}
+          <MapComponent lat={selectedStation.lat} lon={selectedStation.lon} />
         </div>
       )}
     </div>
