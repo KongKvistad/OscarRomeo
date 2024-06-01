@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useEffect } from 'react';
@@ -14,9 +14,22 @@ L.Icon.Default.mergeOptions({
 interface MapProps {
   lat: number;
   lon: number;
+  num_bikes_available: number;
+  num_docks_available: number;
+
 }
 
-const Map: React.FC<MapProps> = ({ lat, lon }) => {
+const FlyToLocation: React.FC<{ lat: number; lon: number }> = ({ lat, lon }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.flyTo([lat, lon], 13, {
+      animate: true,
+    });
+  }, [lat, lon, map]);
+  return null;
+};
+
+const Map: React.FC<MapProps> = ({ lat, lon, num_bikes_available, num_docks_available }) => {
   useEffect(() => {
     // Fix the icon issue on initial load
     delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -28,16 +41,18 @@ const Map: React.FC<MapProps> = ({ lat, lon }) => {
   }, []);
 
   return (
-    <MapContainer center={[lat, lon]} zoom={13} style={{ height: '400px', width: '100%' }}>
+    <MapContainer center={[lat, lon]} zoom={13} style={{ height: '100%', width: '100%' }}>
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
       <Marker position={[lat, lon]}>
         <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
+          <p>available Bikes: {num_bikes_available}</p>
+          <p>available slots: {num_docks_available}</p>
         </Popup>
       </Marker>
+      <FlyToLocation lat={lat} lon={lon} />
     </MapContainer>
   );
 };

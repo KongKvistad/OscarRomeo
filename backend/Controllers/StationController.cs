@@ -24,8 +24,8 @@ public class StationController : ControllerBase
     [HttpGet("stationinfo")]
     public async Task<IActionResult> GetStationInformation()
     {
-        var stationInfo = await _stationService.GetStationInformationAsync();
-        return Ok(stationInfo);
+        var stationData = await _stationService.GetMergedStationDataAsync();
+        return Ok(stationData);
     }
 }
 
