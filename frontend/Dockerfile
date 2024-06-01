@@ -1,32 +1,25 @@
-# Stage 1: Build the Next.js app
-FROM node:18.17.0 AS builder
+# Stage 1: Base Node Image
+FROM node:20.10.0 AS base
 
-# Set the working directory
+# Stage 2: Dependencies Installation
+FROM base AS deps
 WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
 
-# Copy package.json and package-lock.json to the working directory
-COPY package.json package-lock.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application files to the working directory
+# Stage 3: Build the Next.js Application
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Build the application
 RUN npm run build
 
-# Stage 2: Serve the Next.js app
-FROM node:18.17.0 AS runner
-
-# Set the working directory
+# Stage 4: Production Image
+FROM base AS runner
 WORKDIR /app
-
-# Copy the build output from the builder stage
-COPY --from=builder /app ./
-
-# Expose the port
+ENV NODE_ENV=production
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 EXPOSE 3000
-
-# Start the Next.js application
-CMD ["npm", "run", "start"]
+CMD ["node", "server.js"]
