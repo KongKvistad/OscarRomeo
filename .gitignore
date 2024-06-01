@@ -1,0 +1,10 @@
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Ignore node_modules in any subdirectory
+node_modules/
