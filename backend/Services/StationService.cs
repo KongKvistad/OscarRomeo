@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using System.Text.Json.Serialization;
+using backend.Models;
 
 public class StationService
 {
@@ -62,62 +63,8 @@ public class StationService
     }
 }
 
-public class StationInformation
-{
-    public StationInformationData data { get; set; }
 
-    public class StationInformationData
-    {
-        public List<StationInfo> stations { get; set; }
-    }
 
-    public class StationInfo
-    {
-        public string station_id { get; set; }
-        public string name { get; set; }
-        public double lat { get; set; }
-        public double lon { get; set; }
-        public int capacity { get; set; }
-    }
-}
 
-public class StationStatus
-{
-    public StationStatusDataContainer data { get; set; }
 
-    public class StationStatusDataContainer
-    {
-        public List<StationStatusData> stations { get; set; }
-    }
 
-    public class StationStatusData
-    {
-        public string station_id { get; set; }
-        public int num_bikes_available { get; set; }
-        public int num_docks_available { get; set; }
-    }
-}
-
-public class Station
-{
-    [JsonPropertyName("station_id")]
-    public string StationId { get; set; }
-
-    [JsonPropertyName("name")]
-    public string Name { get; set; }
-
-    [JsonPropertyName("lat")]
-    public double Lat { get; set; }
-
-    [JsonPropertyName("lon")]
-    public double Lon { get; set; }
-
-    [JsonPropertyName("capacity")]
-    public int Capacity { get; set; }
-
-    [JsonPropertyName("num_bikes_available")]
-    public int NumBikesAvailable { get; set; }
-
-    [JsonPropertyName("num_docks_available")]
-    public int NumDocksAvailable { get; set; }
-}
