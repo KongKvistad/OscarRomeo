@@ -13,13 +13,17 @@ export interface Station {
 }
 
 async function fetchStationData(): Promise<Station[]> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/Station/stationinfo`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch station data');
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/Station/stationinfo`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch station data');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching station data:', error);
+    return []; // Return an empty array or handle the error appropriately
   }
-  const data = await response.json();
-  console.log('Fetched Station Data:', data);  // Log the stations array to verify its structure
-  return data
 }
 
 const HomePage = async () => {

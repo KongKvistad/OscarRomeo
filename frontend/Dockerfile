@@ -1,25 +1,24 @@
 # Stage 1: Base Node Image
-FROM node:20.10.0 AS base
+FROM node:20.10.0
 
-# Stage 2: Dependencies Installation
-FROM base AS deps
 WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm ci
 
-# Stage 3: Build the Next.js Application
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+ENV NEXT_PUBLIC_API_URL=http://localhost:5000
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application code
 COPY . .
+
+# Build the application
 RUN npm run build
 
-# Stage 4: Production Image
-FROM base AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# Expose the port the app runs on
 EXPOSE 3000
-CMD ["node", "server.js"]
+
+# Start the application
+CMD ["npm", "run", "start"]
