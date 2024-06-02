@@ -1,0 +1,43 @@
+﻿# Ignore build outputs
+bin/
+obj/
+
+# Ignore user-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ignore Rider/JetBrains specific files
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.docstates
+
+# Ignore Visual Studio specific files
+.vscode/
+.vscode/*
+
+# Ignore test result directories
+TestResults/
+
+# Ignore packages
+packages/
+*.nuget/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Ignore tool-specific files
+.vscode/
+.idea/
+.vscode/*
+!.vscode/settings.json
+.vscode/**.code-snippets
+
+# Ignore macOS specific files
+.DS_Store
+
+# Ignore Windows specific files
+Thumbs.db
+ehthumbs.db
