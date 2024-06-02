@@ -26,6 +26,11 @@ i docker container er endepunktet `localhost:5000/swagger/index.html`
 i dev miljø er det `localhost:7100/swagger/index.html`. 
 
 
+# Tester:
+tester kjøres som .net prosjekt via. test-explorer:
+![image](https://github.com/KongKvistad/OscarRomeo/assets/42936783/5e576650-98c0-4c01-bc7e-513722d72f44)
+
+
 # MISC:
 .env-filer:
 
