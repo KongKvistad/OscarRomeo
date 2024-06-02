@@ -14,13 +14,20 @@ må man ha API-et kjørende før man kompilerer frontend med `npm run build` ett
 # avhengigheter: 
 
 porosjektet baserer seg på:
-next.js v.14: https://nextjs.org/docs/getting-started/installation
-.net 6 SDK: https://dotnet.microsoft.com/en-us/download/dotnet/6.0
-react-leaflet: https://react-leaflet.js.org/
+- next.js v.14: https://nextjs.org/docs/getting-started/installation
+- .net 6 SDK: https://dotnet.microsoft.com/en-us/download/dotnet/6.0
+- react-leaflet: https://react-leaflet.js.org/
+
+# Sjekke endepunkt:
+i docker container er endepunktet `localhost:5000/swagger/index.html`
+![image](https://github.com/KongKvistad/OscarRomeo/assets/42936783/459977e2-e981-42fa-85c0-1a3b8c50f758)
 
 
+i dev miljø er det `localhost:7100/swagger/index.html`. 
 
-MISC:
+
+# MISC:
 .env-filer:
+
 Disse er ikke skjult fra git,
 da løsningen ikke skal dyttes til prod.
