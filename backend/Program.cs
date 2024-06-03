@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using backend.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,8 +27,13 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+//Add header
+builder.Services.AddTransient<CustomHeaderHandler>();
+
 // Register HttpClient and StationService
-builder.Services.AddHttpClient<StationService>();
+builder.Services.AddHttpClient<StationService>()
+    .AddHttpMessageHandler<CustomHeaderHandler>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

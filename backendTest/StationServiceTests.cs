@@ -1,29 +1,29 @@
-using System.Net;
 using backend.Models;
-using System.Text.Json;
+using backend.Services;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
+using System.Net;
 using static backend.Models.StationInformation;
 namespace backendTest
 {
 
 
-   public class StationServiceTests
-{
-    [Fact]
-    public async Task GetMergedStationDataAsync_ReturnsMergedStation()
+    public class StationServiceTests
     {
-        // Arrange
-        var fakeHttpClient = A.Fake<HttpClient>();
-        var fakeLogger = A.Fake<ILogger<StationService>>();
-
-        var fakeStationService = A.Fake<StationService>(x => x.WithArgumentsForConstructor(() => new StationService(fakeHttpClient, fakeLogger)));
-
-        var stationInfo = new StationInformation
+        [Fact]
+        public async Task GetMergedStationDataAsync_ReturnsMergedStation()
         {
-            data = new StationInformationData
+            // Arrange
+            var fakeHttpClient = A.Fake<HttpClient>();
+            var fakeLogger = A.Fake<ILogger<StationService>>();
+
+            var fakeStationService = A.Fake<StationService>(x => x.WithArgumentsForConstructor(() => new StationService(fakeHttpClient, fakeLogger)));
+
+            var stationInfo = new StationInformation
             {
-                stations = new List<StationInfo>
+                data = new StationInformationData
+                {
+                    stations = new List<StationInfo>
                 {
                      new StationInfo
                     {
@@ -34,14 +34,14 @@ namespace backendTest
                         capacity = 20
                     }
                 }
-            }
-        };
+                }
+            };
 
-        var stationStatus = new StationStatus
-        {
-            data = new StationStatus.StationStatusDataContainer
+            var stationStatus = new StationStatus
             {
-                stations = new List<StationStatus.StationStatusData>
+                data = new StationStatus.StationStatusDataContainer
+                {
+                    stations = new List<StationStatus.StationStatusData>
                 {
                     new StationStatus.StationStatusData
                     {
@@ -50,8 +50,8 @@ namespace backendTest
                         num_docks_available = 15
                     }
                 }
-            }
-        };
+                }
+            };
 
             A.CallTo(() => fakeStationService.FetchDataFromApiAsync<StationInformation>(A<string>.That.Contains("station_information.json")))
                 .Returns(Task.FromResult(stationInfo));
@@ -62,14 +62,58 @@ namespace backendTest
             // Act
             var stations = await fakeStationService.GetMergedStationDataAsync();
 
-        // Assert
-        Assert.Single(stations);
-        Assert.Equal("1", stations[0].StationId);
-        Assert.Equal("Station 1", stations[0].Name);
-        Assert.Equal(5, stations[0].NumBikesAvailable);
-        Assert.Equal(15, stations[0].NumDocksAvailable);
+            // Assert
+            Assert.Single(stations);
+            Assert.Equal("1", stations[0].StationId);
+            Assert.Equal("Station 1", stations[0].Name);
+            Assert.Equal(5, stations[0].NumBikesAvailable);
+            Assert.Equal(15, stations[0].NumDocksAvailable);
 
-      
+
+        }
+        [Fact]
+        public async Task InvokingHttpClient_AddsClientIdentifierHeader()
+        {
+            // Arrange
+
+            // Arrange
+            var fakeLogger = A.Fake<ILogger<StationService>>();
+
+            var customHandler = new CustomHeaderHandler
+            {
+                InnerHandler = new HttpClientHandler()
+            };
+
+            var httpClient = new HttpClient(customHandler)
+            {
+                BaseAddress = new Uri("http://localhost")
+            };
+
+            var service = new StationService(httpClient, fakeLogger);
+
+            // Intercept the actual HTTP request to ensure the header is added
+            var fakeHttpMessageHandler = A.Fake<HttpMessageHandler>();
+            A.CallTo(fakeHttpMessageHandler)
+                .Where(call => call.Method.Name == "SendAsync")
+                .WithReturnType<Task<HttpResponseMessage>>()
+                .Invokes((HttpRequestMessage request, CancellationToken cancellationToken) =>
+                {
+                    // Assert that the header is present
+                    Assert.True(request.Headers.Contains("Client-Identifier"));
+                    Assert.Equal("oppgave-oscarRomeo", request.Headers.GetValues("Client-Identifier").First());
+                });
+
+            var httpClientWithFakeHandler = new HttpClient(fakeHttpMessageHandler)
+            {
+                BaseAddress = new Uri("http://localhost")
+            };
+
+            var serviceWithFakeHandler = new StationService(httpClientWithFakeHandler, fakeLogger);
+
+            // Act
+            var stations = await serviceWithFakeHandler.GetMergedStationDataAsync();
+
         }
     }
+
 }
