@@ -1,7 +1,9 @@
 using backend.Models;
 using backend.Services;
+using backendTest.MockServices;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Net;
 using static backend.Models.StationInformation;
 namespace backendTest
@@ -72,47 +74,30 @@ namespace backendTest
 
         }
         [Fact]
-        public async Task InvokingHttpClient_AddsClientIdentifierHeader()
+        public async Task HttpClient_Should_Have_Custom_Header()
         {
             // Arrange
-
-            // Arrange
+            var mockHandler = new MockHttpMessageHandler();
             var fakeLogger = A.Fake<ILogger<StationService>>();
-
-            var customHandler = new CustomHeaderHandler
+            var customHeaderHandler = new CustomHeaderHandler()
             {
-                InnerHandler = new HttpClientHandler()
+                InnerHandler = mockHandler
             };
 
-            var httpClient = new HttpClient(customHandler)
-            {
-                BaseAddress = new Uri("http://localhost")
-            };
+            var httpClient = new HttpClient(customHeaderHandler);
 
-            var service = new StationService(httpClient, fakeLogger);
-
-            // Intercept the actual HTTP request to ensure the header is added
-            var fakeHttpMessageHandler = A.Fake<HttpMessageHandler>();
-            A.CallTo(fakeHttpMessageHandler)
-                .Where(call => call.Method.Name == "SendAsync")
-                .WithReturnType<Task<HttpResponseMessage>>()
-                .Invokes((HttpRequestMessage request, CancellationToken cancellationToken) =>
-                {
-                    // Assert that the header is present
-                    Assert.True(request.Headers.Contains("Client-Identifier"));
-                    Assert.Equal("oppgave-oscarRomeo", request.Headers.GetValues("Client-Identifier").First());
-                });
-
-            var httpClientWithFakeHandler = new HttpClient(fakeHttpMessageHandler)
-            {
-                BaseAddress = new Uri("http://localhost")
-            };
-
-            var serviceWithFakeHandler = new StationService(httpClientWithFakeHandler, fakeLogger);
+            // You would normally inject other dependencies of StationService here
+            var stationService = new StationService(httpClient, fakeLogger);
 
             // Act
-            var stations = await serviceWithFakeHandler.GetMergedStationDataAsync();
+            // Call the method on StationService that makes the HTTP request
+            await stationService.FetchDataFromApiAsync<StationInformation>("https://gbfs.urbansharing.com/oslobysykkel.no/station_information.json");
 
+            // Assert
+            Assert.NotNull(mockHandler.RequestMessage);
+            Assert.True(mockHandler.RequestMessage.Headers.Contains("Client-Identifier"));
+            var headerValues = mockHandler.RequestMessage.Headers.GetValues("Client-Identifier");
+            Assert.Contains("oppgave-oscarRomeo", headerValues);
         }
     }
 
