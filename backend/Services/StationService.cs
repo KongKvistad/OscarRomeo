@@ -17,11 +17,12 @@ public class StationService
         _logger = logger;
     }
 
-    private async Task<T> FetchDataFromApiAsync<T>(string url)
+    public virtual async Task<T> FetchDataFromApiAsync<T>(string url)
     {
-        var response = await _httpClient.GetStringAsync(url);
-        _logger.LogInformation($"Fetched data from {url}: {response}");
-        return JsonSerializer.Deserialize<T>(response);
+        var response = await _httpClient.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        var json = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     }
 
     public async Task<List<Station>> GetMergedStationDataAsync()
