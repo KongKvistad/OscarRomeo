@@ -22,8 +22,10 @@ public class StationService
 
     public async Task<List<Station>> GetMergedStationDataAsync()
     {
-        var stationInfo = await FetchDataFromApiAsync<StationInformation>("https://gbfs.urbansharing.com/oslobysykkel.no/station_information.json");
-        var stationStatus = await FetchDataFromApiAsync<StationStatus>("https://gbfs.urbansharing.com/oslobysykkel.no/station_status.json");
+        var stationInfoUrl = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("OsloBySykkelUrl")["StationInformation"];
+        var stationStatusUrl = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("OsloBySykkelUrl")["StationStatus"];
+        var stationInfo = await FetchDataFromApiAsync<StationInformation>(stationInfoUrl); 
+        var stationStatus = await FetchDataFromApiAsync<StationStatus>(stationStatusUrl);
 
         var statusDict = new Dictionary<string, StationStatus.StationStatusData>();
         foreach (var status in stationStatus.data.stations)
@@ -54,7 +56,6 @@ public class StationService
             }
         }
 
-        _logger.LogInformation($"Merged station data: {JsonSerializer.Serialize(mergedStations)}");
         return mergedStations;
     }
 }

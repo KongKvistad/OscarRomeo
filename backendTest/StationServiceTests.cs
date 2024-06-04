@@ -3,8 +3,6 @@ using backend.Services;
 using backendTest.MockServices;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Net;
 using static backend.Models.StationInformation;
 namespace backendTest
 {
@@ -86,11 +84,9 @@ namespace backendTest
 
             var httpClient = new HttpClient(customHeaderHandler);
 
-            // You would normally inject other dependencies of StationService here
             var stationService = new StationService(httpClient, fakeLogger);
 
             // Act
-            // Call the method on StationService that makes the HTTP request
             await stationService.FetchDataFromApiAsync<StationInformation>("https://gbfs.urbansharing.com/oslobysykkel.no/station_information.json");
 
             // Assert
