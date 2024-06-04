@@ -7,7 +7,8 @@
 Dette vil gi deg en løsning som laster dataene asynkront. (Dette er enklest, da skal du ikke måtte laste ned SDK.)
 
 Om man vil ha en static build hvor alle stasjonene er tegnet ut som en del av source,
-må man ha API-et kjørende før man kompilerer frontend med `npm run build` etterfulgt av `npm run start` i `/frontend`:
+må man ha API-et kjørende:  `dotnet build` og `dotnet run` (krever SDK)
+før man kompilerer frontend med `npm run build` etterfulgt av `npm run start` i `/frontend`:
 ![source](https://github.com/KongKvistad/OscarRomeo/assets/42936783/ff8741c4-7807-4ea2-a1e3-c1036fb4c97f).
 
 
